@@ -1,0 +1,14 @@
+{
+  "name": "rk8-pki",
+  "version": "1.0.0",
+  "description": "Use RSA-KEM to encrypt and decrypt messages.",
+  "main": "rk8-pki.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aaron Madsen <amadsen@codifiant.com>",
+  "license": "MIT",
+  "dependencies": {
+    "node-forge": "^0.6.39"
+  }
+}
