@@ -103,7 +103,7 @@ module.exports = {
       iv: cipherObj.iv,
       tag: cipherObj.t
     });
-    decipher.update(cipherObj.m);
+    decipher.update(forge.util.createBuffer(cipherObj.m));
     success = decipher.finish();
     if(success){
       return decipher.output.getBytes();
