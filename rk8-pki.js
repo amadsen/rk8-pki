@@ -1,6 +1,7 @@
 "use strict";
 
-var forge = require('node-forge')({disableNativeCode: true});
+var forge = require('node-forge')({disableNativeCode: true}),
+    pki = forge.pki;
 
 var memoizedKeyMaps = {
   public: {},
@@ -47,9 +48,9 @@ function privateKeyFromPem (privPem) {
   return privKey;
 }
 
-module.export = {
+module.exports = {
   keypair: function(done){
-    return forge.pki.rsa.generateKeyPair({bits: 2048, workers: -1}, function(err, keypair){
+    return pki.rsa.generateKeyPair({bits: 2048, workers: -1}, function(err, keypair){
       if (err) {
         return done(err);
       }
