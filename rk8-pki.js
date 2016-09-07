@@ -9,8 +9,11 @@ var memoizedKeyMaps = {
 };
 
 var pregeneratedKeyPairs = [],
-  desiredCacheLength = 10,
+  desiredCacheLength = 2,
   pending = false;
+
+// TODO: move the transformation of pki keys to and from PEM format off of the
+// main process.
 
 function publicKeyToPem (pubKey) {
   // generate the pem encoded public key for future lookup for transfer and storage
