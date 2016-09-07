@@ -8,6 +8,10 @@ var memoizedKeyMaps = {
   private: {}
 };
 
+var pregeneratedKeyPairs = [],
+  desiredCacheLength = 10,
+  pending = false;
+
 function publicKeyToPem (pubKey) {
   // generate the pem encoded public key for future lookup for transfer and storage
   var pubPem = pki.publicKeyToPem(pubKey);
@@ -20,7 +24,7 @@ function publicKeyToPem (pubKey) {
 
 function privateKeyToPem (privKey) {
   // generate the pem encoded private key for future lookup for transfer and storage
-  var privPem = pki.publicKeyToPem(privKey);
+  var privPem = pki.privateKeyToPem(privKey);
 
   // store a mapping from the pem encoded key to the forge public key
   // TODO: add TTL to this
@@ -48,19 +52,51 @@ function privateKeyFromPem (privPem) {
   return privKey;
 }
 
+/*
+generate a list of keypairs, stored in memory, ahead of time to speed up
+registration process.
+*/
+function cacheNewKeyPairs () {
+  console.log('Number of cached pairs: ', pregeneratedKeyPairs.length);
+  console.log('Number of pending pair generations: ', pending);
+
+  if(pregeneratedKeyPairs.length < desiredCacheLength && !pending) {
+    pending = true;
+    generateKeyPair(function (err, pemKeyPair) {
+      pending = false;
+      pregeneratedKeyPairs.push(pemKeyPair);
+      cacheNewKeyPairs();
+    });
+  }
+}
+
+// start caching
+cacheNewKeyPairs();
+
+function generateKeyPair (done) {
+  return pki.rsa.generateKeyPair({bits: 2048, workers: -1}, function(err, keypair){
+    if (err) {
+      return done(err);
+    }
+    return done(null, {
+      // convert a Forge public key to PEM-format
+      publicKey: publicKeyToPem(keypair.publicKey),
+      // convert a Forge private key to PEM-format
+      privateKey: privateKeyToPem(keypair.privateKey)
+    })
+  });
+}
+
 module.exports = {
   keypair: function(done){
-    return pki.rsa.generateKeyPair({bits: 2048, workers: -1}, function(err, keypair){
-      if (err) {
-        return done(err);
-      }
-      return done(null, {
-        // convert a Forge public key to PEM-format
-        publicKey: publicKeyToPem(keypair.publicKey),
-        // convert a Forge private key to PEM-format
-        privateKey: privateKeyToPem(keypair.privateKey)
-      })
-    });
+    var keypair = pregeneratedKeyPairs.shift(),
+      fn = (!keypair)? generateKeyPair : function (cb) {
+        // replenish the cache
+        setImmediate(cacheNewKeyPairs);
+        cb(null, keypair);
+      };
+
+    return fn(done);
   },
   encrypt: function ( msg, pemPublicKey ) {
     // convert a PEM-formatted public key to a Forge public key
