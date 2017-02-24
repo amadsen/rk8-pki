@@ -81,7 +81,7 @@ if(module === process.mainModule){
 
         fn.apply(null, [].concat(msg.args, function(err, result){
             var response = {
-                id: msg.callbackId,
+                id: msg.id,
             }
 
             if (err) {
@@ -94,25 +94,25 @@ if(module === process.mainModule){
     });
 } else {
     module.exports = (function(){
-        var child = fork('__filename');
+        var child = fork(__filename);
         var actorCallbacks = {};
 
         child.on('message', function(response){
-            cb = actorCallbacks[ response.id ];
+            var cb = actorCallbacks[ response.id ];
             if('function' !== typeof cb) {
                 return;
             }
-            cb(response.error, response.result);
+            return cb(response.error, response.result);
         });
 
-        return Object.keys(actions).reduce( function (exported, actor) {
-            exported[actor] = function () {
+        return Object.keys(actions).reduce( function (exported, action) {
+            exported[action] = function () {
                 var msg = {};
 
                 // gather the args
                 msg.args = [].slice.call(arguments, 0, -1);
 
-                if('function' !== typeof arguments[ args.length ]) {
+                if('function' !== typeof arguments[ msg.args.length ]) {
                     // you don't want a result; we won't do anything
                     return;
                 }
@@ -121,10 +121,10 @@ if(module === process.mainModule){
                 msg.action = action;
 
                 // generate the callback id
-                msg.id = uuid.v4();
+                msg.id = [action].concat(process.hrtime(), Math.ceil(Math.random()*100000) ).join('|');
 
                 // save the callback on our queue
-                actorCallbacks[msg.id] = arguments[ args.length ];
+                actorCallbacks[msg.id] = arguments[ msg.args.length ];
 
                 // send a message to our child process
                 child.send(msg);
