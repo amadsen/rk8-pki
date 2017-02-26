@@ -69,6 +69,8 @@ This function is exported when we are used as a module, but not
 when we load ourself as a child process.
 */
 function setupRk8Pki (target, settings) {
+    settings = settings || {};
+    
     var forge = initForge(settings.useNativeCode? {} : {disableNativeCode:true}),
         pki = forge.pki;
 
