@@ -1,6 +1,6 @@
 {
   "name": "rk8-pki",
-  "version": "1.0.1-alpha",
+  "version": "1.0.2-alpha",
   "description": "Use RSA-KEM to encrypt and decrypt messages.",
   "main": "rk8-pki.js",
   "scripts": {
@@ -9,10 +9,19 @@
   "author": "Aaron Madsen <amadsen@codifiant.com>",
   "license": "MIT",
   "dependencies": {
+    "lru-cache": "^4.0.2",
     "node-forge": "^0.6.39"
   },
   "devDependencies": {
     "tape": "^4.6.3",
     "ursa": "^0.9.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amadsen/rk8-pki.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amadsen/rk8-pki/issues"
+  },
+  "homepage": "https://github.com/amadsen/rk8-pki#readme"
 }

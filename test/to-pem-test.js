@@ -55,6 +55,6 @@ test('toPem.privateKeyFromPem() converts PEM encoded private key to forge privat
 
     var privKey = toPem.privateKeyFromPem(ursaPrivPem);
     assert.equal( typeof privKey.sign, 'function' );
-    assert.equal( typeof privKey.decrypt 'function' );
+    assert.equal( typeof privKey.decrypt, 'function' );
     assert.end();
 });
