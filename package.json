@@ -1,6 +1,6 @@
 {
   "name": "rk8-pki",
-  "version": "1.0.2-alpha",
+  "version": "1.2.0-alpha",
   "description": "Use RSA-KEM to encrypt and decrypt messages.",
   "main": "rk8-pki.js",
   "scripts": {
